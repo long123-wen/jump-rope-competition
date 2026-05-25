@@ -1,1 +1,0 @@
-import{O as e,T as t,V as n,W as r}from"./index-DitZ9xmZ.js";import{t as i}from"./_plugin-vue_export-helper-BDNMzG2s.js";var a={},o={class:`page-container`};function s(i,a){let s=r(`router-view`);return n(),t(`div`,o,[e(s)])}var c=i(a,[[`render`,s]]);export{c as default};
