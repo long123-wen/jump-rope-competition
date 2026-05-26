@@ -70,4 +70,7 @@ app.post('/api/registrations', (req, res) => { registrations.push({ id: Date.now
 
 app.get('/api/orders', (req, res) => res.json({ code: 200, data: [] }));
 
-module.exports = app;
+// Vercel serverless handler
+module.exports = (req, res) => {
+  return app(req, res);
+};
