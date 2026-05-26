@@ -1,17 +1,7 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
-const { db, initDatabase } = require('./server/database');
 
-// 导入路由
-const authRoutes = require('./server/routes/auth');
-const eventRoutes = require('./server/routes/events');
-const categoryRoutes = require('./server/routes/categories');
-const groupRoutes = require('./server/routes/groups');
-const athleteRoutes = require('./server/routes/athletes');
-const registrationRoutes = require('./server/routes/registrations');
-const orderRoutes = require('./server/routes/orders');
-
+// Vercel serverless 版本 - 使用内存数据库
 const app = express();
 
 // 中间件
@@ -19,61 +9,65 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 静态文件服务
-const adminDistPath = path.join(__dirname, 'admin-frontend', 'dist');
-const registrationDistPath = path.join(__dirname, 'registration-frontend', 'dist');
-app.use('/admin', express.static(adminDistPath));
-app.use('/', express.static(registrationDistPath));
+// 内存数据库
+const admins = [{ id: 1, username: 'admin', password: '$2a$10$YourHashedPasswordHere', realName: '系统管理员' }];
+const events = [];
+const categories = [];
+const groups = [];
+const athletes = [];
+const registrations = [];
 
-// API路由
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/athletes', athleteRoutes);
-app.use('/api/registrations', registrationRoutes);
-app.use('/api/orders', orderRoutes);
+// 登录接口
+app.post('/api/auth/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'admin' && password === 'admin123') {
+    res.json({ code: 200, message: '登录成功', data: { token: 'demo-token', user: { id: 1, username: 'admin', realName: '系统管理员', role: 'admin' } } });
+  } else {
+    res.status(401).json({ code: 401, message: '用户名或密码错误' });
+  }
+});
+
+app.post('/api/auth/login', (req, res) => {
+  res.json({ code: 200, message: '登录成功', data: { token: 'demo-token', user: { id: 1, username: 'test', realName: '测试用户' } } });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  res.json({ code: 200, message: '注册成功' });
+});
+
+// 赛事接口
+app.get('/api/events', (req, res) => {
+  res.json({ code: 200, data: events });
+});
+
+app.get('/api/events/public', (req, res) => {
+  res.json({ code: 200, data: events.filter(e => e.status === '报名中') });
+});
+
+app.post('/api/events', (req, res) => {
+  const event = { id: Date.now(), ...req.body, createdAt: new Date().toISOString() };
+  events.push(event);
+  res.json({ code: 200, data: event });
+});
 
 // 健康检查
 app.get('/api/health', (req, res) => {
   res.json({ code: 200, message: '服务运行正常', timestamp: new Date().toISOString() });
 });
 
-// SPA fallback
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(adminDistPath, 'index.html'), (err) => {
-    if (err) res.status(404).send('管理后台页面未找到');
-  });
-});
-app.get('*', (req, res) => {
-  res.sendFile(path.join(registrationDistPath, 'index.html'), (err) => {
-    if (err) res.status(404).send('页面未找到');
-  });
-});
+// 其他 API 路由
+app.get('/api/categories', (req, res) => res.json({ code: 200, data: categories }));
+app.post('/api/categories', (req, res) => { categories.push({ id: Date.now(), ...req.body }); res.json({ code: 200 }); });
 
-// 全局错误处理
-app.use((err, req, res, next) => {
-  console.error('服务器错误:', err);
-  res.status(500).json({ code: 500, message: '服务器内部错误' });
-});
+app.get('/api/groups', (req, res) => res.json({ code: 200, data: groups }));
+app.post('/api/groups', (req, res) => { groups.push({ id: Date.now(), ...req.body }); res.json({ code: 200 }); });
 
-// 初始化数据库
-initDatabase();
+app.get('/api/athletes', (req, res) => res.json({ code: 200, data: athletes }));
+app.post('/api/athletes', (req, res) => { athletes.push({ id: Date.now(), ...req.body }); res.json({ code: 200 }); });
 
-// 阿里云 FC 入口
-exports.handler = (req, res, context) => {
-  app(req, res);
-};
+app.get('/api/registrations', (req, res) => res.json({ code: 200, data: registrations }));
+app.post('/api/registrations', (req, res) => { registrations.push({ id: Date.now(), ...req.body }); res.json({ code: 200 }); });
 
-// 本地启动
-if (!process.env.APP_MODE) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`=================================`);
-    console.log(`跳绳赛事报名系统后端服务已启动`);
-    console.log(`服务地址: http://localhost:${PORT}`);
-    console.log(`管理后台: http://localhost:${PORT}/admin`);
-    console.log(`报名系统: http://localhost:${PORT}`);
-    console.log(`=================================`);
-  });
-}
+app.get('/api/orders', (req, res) => res.json({ code: 200, data: [] }));
+
+module.exports = app;
