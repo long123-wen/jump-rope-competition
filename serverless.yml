@@ -1,0 +1,29 @@
+app: rope-skipping-system
+stage: dev
+
+component: scf
+name: rope-skipping-system
+
+inputs:
+  src: ./
+  handler: scf_bootstrap
+  runtime: Nodejs18.15
+  region: ap-guangzhou
+  description: 跳绳赛事报名系统
+  memorySize: 1024
+  timeout: 30
+  initTimeout: 60
+  type: web
+  webFunction:
+    runtime: Nodejs18.15
+    handler: scf_bootstrap
+  environment:
+    variables:
+      SCF_RUNTIME: "true"
+  events:
+    - apigw:
+        parameters:
+          stageName: release
+          httpMethod: ANY
+          integratedResponse: true
+          enableCORS: true

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+.env
+npm-debug.log*
+package-lock.json
+.vercel

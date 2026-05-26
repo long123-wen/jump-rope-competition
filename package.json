@@ -1,0 +1,19 @@
+{
+  "name": "rope-skipping-registration-system",
+  "version": "1.0.0",
+  "description": "跳绳赛事报名系统 - 后台管理与在线自助报名",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.4.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "exceljs": "^4.4.0"
+  }
+}

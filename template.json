@@ -1,0 +1,42 @@
+{
+  "Type": "TencentCloud::Serverless::Function",
+  "Properties": {
+    "FunctionName": "rope-skipping-system",
+    "Description": "跳绳赛事报名系统",
+    "Handler": "scf_bootstrap",
+    "Runtime": "Nodejs18.15",
+    "MemorySize": 1024,
+    "Timeout": 30,
+    "InitTimeout": 60,
+    "Environment": {
+      "Variables": {
+        "SCF_RUNTIME": "true"
+      }
+    },
+    "Code": {
+      "S3Bucket": "",
+      "S3Key": "",
+      "LocalZipFile": ""
+    },
+    "VpcConfig": {},
+    "PublicNetConfig": {
+      "EipFixed": false
+    }
+  },
+  "Events": {
+    "httpTrigger": {
+      "Type": "ApiGateway",
+      "Properties": {
+        "StageName": "release",
+        "HttpMethod": "ANY",
+        "IntegratedResponse": true,
+        "EnableCORS": true,
+        "ServiceTimeout": 30,
+        "RequestConfig": {
+          "Method": "ANY",
+          "Path": "/"
+        }
+      }
+    }
+  }
+}

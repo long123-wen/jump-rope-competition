@@ -1,0 +1,36 @@
+edition: 3.0.0
+name: rope-skipping-system
+access: default
+
+vars:
+  region: cn-hangzhou
+
+resources:
+  rope-skipping-system:
+    component: fc3
+    props:
+      region: ${vars.region}
+      functionName: rope-skipping-system
+      runtime: custom.debian10
+      cpu: 0.5
+      memorySize: 512
+      diskSize: 512
+      timeout: 60
+      environmentVariables:
+        PATH: /var/fc/lang/nodejs18/bin:/usr/local/bin:/usr/bin:/bin
+        NODE_ENV: production
+      customRuntimeConfig:
+        command:
+          - node
+          - server/index.js
+      code: ./
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          triggerConfig:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
