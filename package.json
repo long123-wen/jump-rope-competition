@@ -1,9 +1,5 @@
 {
   "name": "rope-skipping-registration-system",
   "version": "1.0.0",
-  "description": "跳绳赛事报名系统",
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  }
+  "description": "跳绳赛事报名系统"
 }
